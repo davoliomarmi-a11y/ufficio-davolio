@@ -11,7 +11,7 @@ Questa versione sostituisce la chiamata API degli ordini con la lettura delle li
 5. Nel laboratorio mostrare la tabella degli ordini con le colonne Stato, Numero/Ordine e Cliente visibili.
 6. Tornare a Ufficio e premere **Leggi le schede aperte** in uno dei due pannelli.
 
-La nuova scrivania è su **https://davoliomarmi-a11y.github.io/ufficio-davolio/**. L’estensione 1.1.0 supporta questo indirizzo, il precedente `https://ufficio-davolio.boldox64.chatgpt.site/` e le anteprime locali `http://127.0.0.1:5173/` e `http://127.0.0.1:8787/`. Dopo un aggiornamento dell’estensione, sostituire i suoi file, premere **Ricarica** in `chrome://extensions` e ricaricare le schede.
+Il nuovo indirizzo previsto è **https://davoliomarmi-a11y.github.io/ufficio-davolio/**; diventa attivo dopo l’abilitazione di GitHub Pages descritta in [Pubblicazione](PUBBLICAZIONE.md). L’estensione 1.1.0 supporta questo indirizzo, il precedente `https://ufficio-davolio.boldox64.chatgpt.site/` e le anteprime locali `http://127.0.0.1:5173/` e `http://127.0.0.1:8787/`. Dopo un aggiornamento dell’estensione, sostituire i suoi file, premere **Ricarica** in `chrome://extensions` e ricaricare le schede.
 
 ## Cosa viene letto
 

@@ -34,6 +34,15 @@ Aprire `http://127.0.0.1:8000/`. Questo comando serve solo l’anteprima locale.
 
 ## Aggiornare GitHub Pages
 
+Il ramo `gh-pages` è già caricato. L’attivazione automatica del servizio è stata
+rifiutata da GitHub con `Resource not accessible by integration` (HTTP 403):
+l’accesso di questa chat consente il push dei file, ma non l’abilitazione di Pages.
+Per la prima attivazione il titolare può aprire direttamente
+https://github.com/davoliomarmi-a11y/ufficio-davolio/settings/pages e impostare
+**Deploy from a branch**, **gh-pages**, **/ (root)**, quindi **Save**.
+Non serve condividere password o token nella chat. Dopo il salvataggio GitHub
+esegue la prima pubblicazione; il sito non va dichiarato attivo finché non è verificato.
+
 1. Salvare i sorgenti aggiornati nel ramo `main` e rigenerare i file.
 2. Pubblicare **solo il contenuto di `out/pages/`** nel ramo `gh-pages`, alla radice
    del ramo; non pubblicare l’intero checkout né la cartella `out` come sottocartella.
