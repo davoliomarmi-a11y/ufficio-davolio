@@ -1,5 +1,7 @@
 # vinext-starter
 
+Per l’uso di Ufficio D’Avolio, leggere [Lettura delle schede aperte](LETTURA-SCHEDE.md). La scrivania legge posta e lavori tramite un’estensione Chrome locale, senza chiamare API esterne. I [prossimi passi](PROSSIMI-PASSI.md) descrivono il confronto in sola lettura con Fatture in Cloud, ancora da realizzare.
+
 A clean full-stack starter running on [vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and Drizzle support.
 
 ## Prerequisites

@@ -1,49 +1,83 @@
-'use strict';
-(() => {
-  const el = id => document.getElementById(id);
-  let orders = [], checkedAt = null, busy = false, failed = false, openedFromLink = false;
-  const date = value => value && !isNaN(Date.parse(value)) ? new Intl.DateTimeFormat('it-IT',{dateStyle:'short',timeStyle:'short',timeZone:'Europe/Rome'}).format(new Date(value)) : 'Non indicato';
-  function detail(order) {
-    el('order-dialog-title').textContent = `Ordine n. ${order.number} · ${order.customer}`;
-    el('order-content').replaceChildren();
-    for (const value of [`Completato: ${date(order.completedAt)}`,`Categoria: ${order.category}`,`Riferimento gestionale: ${order.reference || 'Non indicato'}`,order.description,`Materiale: ${order.material || 'Non indicato'}`,'Fattura: da verificare in Fatture in Cloud.']) {const p=document.createElement('p');p.textContent=value;el('order-content').append(p);}
-    el('order-dialog').showModal();
+import { openTabs } from './open-tabs.js';
+import { formatDate } from './open-tabs-data.js';
+
+const el = id => document.getElementById(id);
+let orders = [], checkedAt = null, failed = false, openedFromLink = false;
+const completedDate = order => order.completedText || formatDate(order.completedAt);
+
+function detail(order) {
+  el('order-dialog-title').textContent = `Ordine n. ${order.number} · ${order.customer || 'Cliente non visibile'}`;
+  el('order-content').replaceChildren();
+  for (const value of [`Completato: ${completedDate(order)}`, `Categoria: ${order.category || 'Non visibile'}`, `Riferimento gestionale: ${order.reference || 'Non visibile'}`, order.description, `Materiale: ${order.material || 'Non visibile'}`, 'Fattura: da verificare in Fatture in Cloud.']) {
+    if (!value) continue;
+    const p = document.createElement('p');
+    p.textContent = value;
+    el('order-content').append(p);
   }
-  function render() {
-    const query = el('completed-search').value.trim().toLocaleLowerCase('it');
-    const shown = orders.filter(o => `${o.number} ${o.customer} ${o.reference}`.toLocaleLowerCase('it').includes(query));
-    el('completed-count').textContent = checkedAt ? String(orders.length) : '—';
-    el('completed-filter').textContent = checkedAt ? `${shown.length} lavori visualizzati su ${orders.length}${query ? ' · Filtro: '+el('completed-search').value.trim() : ''}` : '';
-    el('completed-rows').replaceChildren();
-    for (const o of shown) {
-      const tr=document.createElement('tr');
-      const td=document.createElement('td'),link=document.createElement('a');
-      link.href=`?ordine=${encodeURIComponent(o.number)}#completed-section`;link.textContent=`N. ${o.number} · ${o.customer}`;link.onclick=e=>{e.preventDefault();detail(o)};td.append(link);tr.append(td);
-      for(const text of [date(o.completedAt),`${o.category}${o.reference ? ' · Rif. '+o.reference : ''}\n${o.description}`, 'Da verificare\nN. fattura: __________________']){const cell=document.createElement('td');cell.textContent=text;tr.append(cell);}
-      el('completed-rows').append(tr);
+  el('order-dialog').showModal();
+}
+
+function render() {
+  const query = el('completed-search').value.trim().toLocaleLowerCase('it');
+  const shown = orders.filter(order => `${order.number} ${order.customer} ${order.reference}`.toLocaleLowerCase('it').includes(query));
+  el('completed-count').textContent = checkedAt ? String(orders.length) : '—';
+  el('completed-filter').textContent = checkedAt ? `${shown.length} lavori mostrati su ${orders.length} completati letti nella pagina aperta${query ? ' · Filtro: ' + el('completed-search').value.trim() : ''}. La lista può essere parziale.` : '';
+  el('completed-rows').replaceChildren();
+  for (const order of shown) {
+    const row = document.createElement('tr');
+    const cell = document.createElement('td');
+    const button = document.createElement('button');
+    button.className = 'text-button';
+    button.textContent = `N. ${order.number} · ${order.customer || 'Cliente non visibile'}`;
+    button.onclick = () => detail(order);
+    cell.append(button);
+    row.append(cell);
+    for (const value of [completedDate(order), `${order.category}${order.reference ? ' · Rif. ' + order.reference : ''}\n${order.description}`, 'Da verificare\nN. fattura: __________________']) {
+      const td = document.createElement('td');
+      td.textContent = value;
+      row.append(td);
     }
-    el('completed-empty').hidden=!checkedAt || shown.length>0;
-    el('completed-empty').textContent=query?'Nessun lavoro corrisponde alla ricerca.':'Nessun lavoro nello stato “Completato”.';
-    el('print-completed').disabled=!checkedAt || !shown.length;
+    el('completed-rows').append(row);
   }
-  async function refresh() {
-    if (busy) return;
-    busy=true;el('refresh-completed').disabled=true;
-    try {
-      const r=await fetch('/api/completed-orders',{cache:'no-store',signal:AbortSignal.timeout(20000)});
-      if(!r.ok) throw new Error(r.status===401?'Accesso richiesto: riaprite il sito e accedete con ChatGPT.':'Il laboratorio non risponde.');
-      const data=await r.json();if(!Array.isArray(data.orders)||!data.checkedAt)throw new Error('Risposta del laboratorio non valida.');
-      orders=data.orders;checkedAt=data.checkedAt;failed=false;
-      el('completed-status').textContent=`Aggiornato dal laboratorio il ${date(checkedAt)} · aggiornamento automatico attivo`;
-      el('completed-status').className='live-status';render();
-      if(!openedFromLink){openedFromLink=true;const n=new URLSearchParams(location.search).get('ordine');if(n){const order=orders.find(o=>String(o.number)===n);if(order)detail(order);else {el('completed-status').textContent+=` · Ordine ${n} non presente tra i completati.`;}}}
-    } catch(e) {
-      failed=true;el('completed-status').className='invoice-warning';
-      el('completed-status').textContent=`Aggiornamento non riuscito. ${e.message} ${checkedAt ? 'Dati non aggiornati: ultima lettura '+date(checkedAt)+'.' : 'Nessuna lista disponibile.'}`;
-    } finally {busy=false;el('refresh-completed').disabled=false;}
+  el('completed-empty').hidden = !checkedAt || shown.length > 0;
+  el('completed-empty').textContent = query ? 'Nessun lavoro letto corrisponde alla ricerca.' : 'Nessun lavoro completato tra le righe visibili lette. La lista del laboratorio può avere altre pagine o filtri.';
+  el('print-completed').disabled = !checkedAt || !shown.length;
+}
+
+function unavailable(message) {
+  failed = true;
+  el('completed-status').className = 'invoice-warning';
+  el('completed-status').textContent = `${message} ${checkedAt ? 'Resta la lettura precedente del ' + formatDate(checkedAt) + ', non aggiornata.' : 'Nessuna lista letta.'}`;
+}
+
+let lastSnapshot = null;
+openTabs.subscribe(state => {
+  el('refresh-completed').disabled = state.reading;
+  el('completed-section').setAttribute('aria-busy', String(state.reading));
+  if (state.reading) { el('completed-status').textContent = 'Lettura delle righe visibili nelle schede aperte…'; return; }
+  if (state.error) { unavailable(state.error); return; }
+  if (!state.snapshot || state.snapshot === lastSnapshot) return;
+  lastSnapshot = state.snapshot;
+  const data = state.snapshot.orders;
+  if (data.status !== 'ok') { unavailable(data.message || 'Aprite nel laboratorio la lista dei lavori con numero, cliente e stato visibili.'); return; }
+  orders = data.items;
+  checkedAt = state.snapshot.readAt;
+  failed = false;
+  el('completed-status').className = 'live-status';
+  el('completed-status').textContent = `Letto dalla scheda Lavori il ${formatDate(checkedAt)}. Solo righe visibili, non l’intero gestionale. ${data.message}`;
+  render();
+  if (!openedFromLink) {
+    openedFromLink = true;
+    const number = new URLSearchParams(location.search).get('ordine');
+    const order = orders.find(item => String(item.number) === number);
+    if (order) detail(order);
   }
-  el('refresh-completed').onclick=refresh;el('completed-search').oninput=render;
-  el('print-completed').onclick=()=>{if(!checkedAt)return;el('printed-at').textContent=`D’Avolio Marmi · Stampato il ${date(new Date().toISOString())} · Dati letti il ${date(checkedAt)}${failed?' · ATTENZIONE: aggiornamento non riuscito, dati precedenti.':''}`;window.print();};
-  refresh();setInterval(()=>{if(!document.hidden)refresh()},60000);
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh()});window.addEventListener('online',refresh);
-})();
+});
+
+el('refresh-completed').onclick = () => { openTabs.read().catch(() => {}); };
+el('completed-search').oninput = render;
+el('print-completed').onclick = () => {
+  if (!checkedAt) return;
+  el('printed-at').textContent = `D’Avolio Marmi · Stampato il ${formatDate(new Date().toISOString())} · Righe visibili lette il ${formatDate(checkedAt)} · Lista parziale${failed ? ' · ATTENZIONE: ultima lettura non riuscita; dati precedenti.' : ''}`;
+  window.print();
+};
