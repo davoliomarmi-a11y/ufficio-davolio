@@ -1,31 +1,17 @@
 'use strict';
 const $ = selector => document.querySelector(selector);
-const REPORT_DAY = '2026-10-17';
 const TIMEZONE = 'Europe/Rome';
 const PERIOD = 2 * 60 * 60 * 1000;
 const getSaved = (key, fallback = '') => { try { return localStorage.getItem(key) || fallback; } catch { return fallback; } };
 const save = (key, value) => { try { localStorage.setItem(key, value); } catch {} };
 const romeDay = date => new Intl.DateTimeFormat('sv-SE', { timeZone: TIMEZONE }).format(date);
-let lastDisplayedDay = '';
 function refreshDay() {
-  const date = new Date(), today = romeDay(date), stale = today !== REPORT_DAY;
-  $('#today-date').textContent = new Intl.DateTimeFormat('it-IT', { weekday:'long', day:'numeric', month:'long', year:'numeric', timeZone:TIMEZONE }).format(date);
-  $('#stale-notice').hidden = !stale;
-  $('#saved-summary').hidden = !stale;
-  if (today !== lastDisplayedDay) $('#saved-report').open = !stale;
-  lastDisplayedDay = today;
+  $('#today-date').textContent = new Intl.DateTimeFormat('it-IT', { weekday:'long', day:'numeric', month:'long', year:'numeric', timeZone:TIMEZONE }).format(new Date());
 }
 refreshDay();
 setInterval(refreshDay, 60000);
 $('#open-settings').onclick = () => $('#settings').showModal();
 document.querySelectorAll('[data-close]').forEach(button => button.onclick = () => document.getElementById(button.dataset.close).close());
-function showUpdate() { if ($('#settings').open) $('#settings').close(); $('#update-dialog').showModal(); }
-$('#update-report').onclick = showUpdate;
-$('#update-from-settings').onclick = showUpdate;
-$('#copy-update').onclick = async () => {
-  try { await navigator.clipboard.writeText($('#update-prompt').value); $('#copy-status').textContent = 'Richiesta copiata. Aprite l’assistente e incollatela nella chat.'; }
-  catch { $('#update-prompt').focus(); $('#update-prompt').select(); $('#copy-status').textContent = 'Selezione pronta: premete Ctrl+C per copiare la richiesta.'; }
-};
 function setSize(large) {
   document.documentElement.classList.toggle('large', large);
   $('#large-text').setAttribute('aria-pressed', String(large));
@@ -33,10 +19,6 @@ function setSize(large) {
 }
 setSize(getSaved('ufficio-large-text') === 'yes');
 $('#large-text').onclick = () => { const large = !document.documentElement.classList.contains('large'); setSize(large); save('ufficio-large-text', large ? 'yes' : 'no'); };
-document.querySelectorAll('[data-todo]').forEach(input => {
-  input.checked = getSaved('todo:' + input.dataset.todo) === 'done';
-  input.onchange = () => { save('todo:' + input.dataset.todo, input.checked ? 'done' : 'open'); $('#todo-status').textContent = 'Spunta salvata su questo PC. Posta e calendario non sono stati modificati.'; };
-});
 let voices = [], remindersOn = false, nextReminder = 0;
 const hasVoice = 'speechSynthesis' in window;
 function loadVoices() {
@@ -62,10 +44,7 @@ if (hasVoice) { loadVoices(); speechSynthesis.addEventListener('voiceschanged', 
 $('#voice-choice').onchange = () => save('ufficio-voice', $('#voice-choice').value);
 $('#test-voice').onclick = () => speak('Ciao Sabrina, ciao Angela. Guardiamo insieme le cose da fare, una cosa alla volta.');
 $('#stop-voice').onclick = () => { if (hasVoice) speechSynthesis.cancel(); };
-$('#read-report').onclick = () => {
-  const stale = romeDay(new Date()) !== REPORT_DAY;
-  speak((stale ? 'Attenzione: questo riepilogo non è di oggi. ' : '') + 'Riepilogo salvato il 17 ottobre 2026 alle 16 e 2. Appuntamenti: alle 10, tumulazioni a Nervi 3, Carla Italia Monti e Luigi Risso. Alle 11 e 40, Lucia Montefusco, resti e ceneri; il cimitero è da verificare. Tre priorità: controllare il messaggio respinto dal Comune di Davagna; verificare l’esito dei due appuntamenti; controllare l’avviso PosteID nei canali ufficiali. Questi dati non si aggiornano da soli. Per le novità, aprite l’assistente.');
-};
+$('#read-report').onclick = () => speak('Benvenute nella scrivania dell’ufficio. Tenete aperte Gmail e la lista Lavori, poi premete Leggi posta e lavori. Per le priorità aprite Briefing programmati. Per chiedere una mano scegliete Assistente e voce: nella chat potete scrivere oppure premere il pulsante della voce.');
 function reminderStatus() {
   $('#toggle-reminders').setAttribute('aria-pressed', String(remindersOn));
   $('#toggle-reminders').textContent = remindersOn ? 'Disattiva i promemoria vocali' : 'Attiva i promemoria vocali';

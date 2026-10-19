@@ -11,7 +11,7 @@ Questa versione sostituisce la chiamata API degli ordini con la lettura delle li
 5. Nel laboratorio mostrare la tabella degli ordini con le colonne Stato, Numero/Ordine e Cliente visibili.
 6. Tornare a Ufficio e premere **Leggi le schede aperte** in uno dei due pannelli.
 
-L’estensione funziona sulla scrivania `https://ufficio-davolio.boldox64.chatgpt.site/` e nelle anteprime locali `http://127.0.0.1:5173/` e `http://127.0.0.1:8787/`. La versione pubblicata del sito deve contenere questi nuovi file per offrire i pulsanti: un push su GitHub non aggiorna automaticamente ChatGPT Sites.
+La nuova scrivania è su **https://davoliomarmi-a11y.github.io/ufficio-davolio/**. L’estensione 1.1.0 supporta questo indirizzo, il precedente `https://ufficio-davolio.boldox64.chatgpt.site/` e le anteprime locali `http://127.0.0.1:5173/` e `http://127.0.0.1:8787/`. Dopo un aggiornamento dell’estensione, sostituire i suoi file, premere **Ricarica** in `chrome://extensions` e ricaricare le schede.
 
 ## Cosa viene letto
 
@@ -21,7 +21,7 @@ L’estensione funziona sulla scrivania `https://ufficio-davolio.boldox64.chatgp
 
 L’ora mostrata è quella della lettura della pagina già caricata: non prova che Gmail o il laboratorio abbiano scaricato nuove informazioni. Per acquisire novità, aggiornare prima la pagina sorgente. Se una nuova lettura fallisce, i dati precedenti restano contrassegnati come non aggiornati. Ricaricando Ufficio, i dati letti vengono eliminati.
 
-Il riepilogo del 17 ottobre 2026 rimane storico: la sua data non viene sostituita con quella di oggi senza verificare realmente posta e calendario. La lettura delle schede non modifica attività programmate, calendari o fatture e non ne realizza una sincronizzazione automatica.
+Il vecchio riepilogo del 17 ottobre 2026 non viene distribuito nella nuova pagina pubblica. Non vengono inventati dati aggiornati: posta e lavori compaiono solo dopo una lettura. La lettura delle schede non modifica attività programmate, calendari o fatture e non ne realizza una sincronizzazione automatica.
 
 ## Verifiche di sviluppo
 

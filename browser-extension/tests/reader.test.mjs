@@ -9,6 +9,8 @@ const external = createRequire(`${process.env.DAVOLIO_TEST_DEPS || '/tmp/davolio
 const { JSDOM } = external('jsdom');
 const readerCode = readFileSync(new URL('../dom-reader.js', import.meta.url), 'utf8');
 const workerCode = readFileSync(new URL('../worker.js', import.meta.url), 'utf8');
+const bridgeCode = readFileSync(new URL('../bridge.js', import.meta.url), 'utf8');
+const manifest = JSON.parse(readFileSync(new URL('../manifest.json', import.meta.url), 'utf8'));
 const mailUrl = 'https://mail.google.com/mail/u/0/#inbox';
 const labUrl = 'https://laboratorio-davolio.roberto81.chatgpt.site/';
 function fixture(html, url) {
@@ -120,6 +122,34 @@ test('Laboratorio: visible non-completed rows and exact empty marker verify only
     assert.equal(result.partial, true);
   }
 });
+const approvedOfficeUrls = [
+  'https://davoliomarmi-a11y.github.io/ufficio-davolio/',
+  'https://davoliomarmi-a11y.github.io/ufficio-davolio/?ordine=1151#posta',
+  'https://ufficio-davolio.boldox64.chatgpt.site/?ordine=1151#posta',
+  'http://127.0.0.1:5173/?ordine=1151#posta',
+  'http://127.0.0.1:8787/',
+];
+const rejectedOfficeUrls = [
+  'https://davoliomarmi-a11y.github.io/',
+  'https://davoliomarmi-a11y.github.io/#/ufficio-davolio/',
+  'https://davoliomarmi-a11y.github.io/?next=/ufficio-davolio/',
+  'https://davoliomarmi-a11y.github.io/ufficio-davolio',
+  'https://davoliomarmi-a11y.github.io/ufficio-davolio/other#/',
+  'https://davoliomarmi-a11y.github.io/other/?ordine=1151#/ufficio-davolio/',
+  'https://davoliomarmi-a11y.github.io.evil.example/ufficio-davolio/',
+  'https://another-account.github.io/ufficio-davolio/',
+  'http://davoliomarmi-a11y.github.io/ufficio-davolio/',
+  'https://ufficio-davolio.boldox64.chatgpt.site/other#/',
+  'http://127.0.0.1:3000/',
+  'http://127.0.0.1:5173/ufficio-davolio/',
+  'http://localhost:5173/',
+];
+test('Manifest: GitHub Pages is restricted to the office repository path and extension is version 1.1.0', () => {
+  const githubMatch = 'https://davoliomarmi-a11y.github.io/ufficio-davolio/*';
+  assert.equal(manifest.version, '1.1.0');
+  assert.deepEqual(manifest.host_permissions.filter((entry) => entry.includes('github.io')), [githubMatch]);
+  assert.deepEqual(manifest.content_scripts.flatMap((entry) => entry.matches).filter((entry) => entry.includes('github.io')), [githubMatch]);
+});
 test('Worker: foreign origins, paths, frames and extension IDs are rejected before querying tabs', () => {
   let listener, queries = 0;
   const chrome = { runtime: { id: 'own', onMessage: { addListener: (fn) => { listener = fn; } } }, tabs: { query: () => { queries += 1; } } };
@@ -131,19 +161,81 @@ test('Worker: foreign origins, paths, frames and extension IDs are rejected befo
     { ...valid, url: 'https://ufficio-davolio.boldox64.chatgpt.site/other' },
     { ...valid, url: 'http://127.0.0.1:3000/', tab: { url: 'http://127.0.0.1:3000/' } },
     { ...valid, tab: { url: 'https://attacker.example/' } },
+    ...rejectedOfficeUrls.map((url) => ({ ...valid, url, tab: { url } })),
+    { ...valid, url: approvedOfficeUrls[0], tab: { url: 'https://davoliomarmi-a11y.github.io/other/' } },
+    { ...valid, url: approvedOfficeUrls[0], tab: { url: valid.url } },
   ]) assert.equal(listener({ type: 'DAVOLIO_READ_OPEN_TABS' }, sender, () => assert.fail('Unauthorized response')), undefined);
   assert.equal(queries, 0);
 });
 test('Worker: approved dashboard receives clear missing-tab results without network or storage', async () => {
-  let listener;
-  const queries = [];
-  const chrome = { runtime: { id: 'own', onMessage: { addListener: (fn) => { listener = fn; } } }, tabs: { query: (query, done) => { queries.push(query.url); done([]); } } };
-  vm.runInNewContext(workerCode, { chrome, URL, setTimeout, clearTimeout, Date });
-  const url = 'https://ufficio-davolio.boldox64.chatgpt.site/?ordine=1151';
-  const result = await new Promise((resolve) => {
-    assert.equal(listener({ type: 'DAVOLIO_READ_OPEN_TABS' }, { id: 'own', frameId: 0, url, tab: { url } }, resolve), true);
-  });
-  assert.equal(result.mail.status, 'unavailable');
-  assert.equal(result.orders.status, 'unavailable');
-  assert.equal(queries.length, 2);
+  for (const url of approvedOfficeUrls) {
+    let listener;
+    const queries = [];
+    const chrome = { runtime: { id: 'own', onMessage: { addListener: (fn) => { listener = fn; } } }, tabs: { query: (query, done) => { queries.push(query.url); done([]); } } };
+    vm.runInNewContext(workerCode, { chrome, URL, setTimeout, clearTimeout, Date });
+    const result = await new Promise((resolve) => {
+      assert.equal(listener({ type: 'DAVOLIO_READ_OPEN_TABS' }, { id: 'own', frameId: 0, url, tab: { url } }, resolve), true, url);
+    });
+    assert.equal(result.mail.status, 'unavailable', url);
+    assert.equal(result.orders.status, 'unavailable', url);
+    assert.equal(queries.length, 2, url);
+  }
+});
+function bridgeFixture(url, framed = false, beforeReply = () => {}) {
+  const location = new URL(url);
+  const listeners = [];
+  const calls = [];
+  const responses = [];
+  const window = {
+    addEventListener: (event, listener) => { if (event === 'message') listeners.push(listener); },
+    postMessage: (message, origin) => { responses.push({ message, origin }); },
+  };
+  window.top = framed ? {} : window;
+  const chrome = { runtime: { sendMessage: (message, done) => { calls.push(message); beforeReply(location); done({ readAt: 'test', mail: {}, orders: {} }); } } };
+  vm.runInNewContext(bridgeCode, { window, location, chrome, setTimeout, clearTimeout, Date });
+  const send = (overrides = {}) => {
+    const event = { source: window, origin: location.origin, data: { type: 'DAVOLIO_READ_OPEN_TABS', requestId: 'request-1' }, ...overrides };
+    for (const listener of listeners) listener(event);
+  };
+  return { window, location, listeners, calls, responses, send };
+}
+test('Bridge: approved exact paths retain order queries and fragments', () => {
+  for (const url of approvedOfficeUrls) {
+    const bridge = bridgeFixture(url);
+    bridge.send();
+    assert.equal(bridge.calls.length, 1, url);
+    assert.equal(bridge.responses.length, 1, url);
+    assert.equal(bridge.responses[0].origin, new URL(url).origin, url);
+    assert.equal(bridge.responses[0].message.requestId, 'request-1', url);
+  }
+});
+test('Bridge: other repository paths, fragment route bypasses, origins and frames cannot request data', () => {
+  for (const url of rejectedOfficeUrls) {
+    const bridge = bridgeFixture(url);
+    bridge.send();
+    assert.equal(bridge.listeners.length, 0, url);
+    assert.equal(bridge.calls.length, 0, url);
+  }
+  const framed = bridgeFixture(approvedOfficeUrls[0], true);
+  framed.send();
+  assert.equal(framed.listeners.length, 0);
+  assert.equal(framed.calls.length, 0);
+  const bridge = bridgeFixture(approvedOfficeUrls[0]);
+  bridge.send({ source: {} });
+  bridge.send({ origin: 'https://attacker.example' });
+  assert.equal(bridge.calls.length, 0);
+});
+test('Bridge: same-document navigation outside the approved path stops subsequent requests', () => {
+  const bridge = bridgeFixture(approvedOfficeUrls[0]);
+  bridge.location.pathname = '/other/';
+  bridge.location.hash = '/ufficio-davolio/';
+  bridge.send();
+  assert.equal(bridge.calls.length, 0);
+  assert.equal(bridge.responses.length, 0);
+});
+test('Bridge: a read finishing after navigation to another repository path cannot expose data there', () => {
+  const bridge = bridgeFixture(approvedOfficeUrls[0], false, (location) => { location.pathname = '/other/'; });
+  bridge.send();
+  assert.equal(bridge.calls.length, 1);
+  assert.equal(bridge.responses.length, 0);
 });

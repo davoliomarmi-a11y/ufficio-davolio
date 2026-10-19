@@ -1,8 +1,9 @@
 'use strict';
-const OFFICE_ORIGINS = new Set([
-  'https://ufficio-davolio.boldox64.chatgpt.site',
-  'http://127.0.0.1:5173',
-  'http://127.0.0.1:8787',
+const OFFICE_PATHS = new Map([
+  ['https://ufficio-davolio.boldox64.chatgpt.site', '/'],
+  ['https://davoliomarmi-a11y.github.io', '/ufficio-davolio/'],
+  ['http://127.0.0.1:5173', '/'],
+  ['http://127.0.0.1:8787', '/'],
 ]);
 const SOURCE_ORIGINS = {
   mail: 'https://mail.google.com',
@@ -14,8 +15,9 @@ function isOffice(sender) {
   try {
     const frame = new URL(sender.url);
     const tab = new URL(sender.tab.url);
-    return OFFICE_ORIGINS.has(frame.origin) && frame.pathname === '/'
-      && frame.origin === tab.origin && tab.pathname === '/';
+    const path = OFFICE_PATHS.get(frame.origin);
+    return path !== undefined && frame.pathname === path
+      && frame.origin === tab.origin && tab.pathname === path;
   } catch { return false; }
 }
 function queryTabs(url) {

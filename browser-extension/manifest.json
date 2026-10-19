@@ -1,12 +1,13 @@
 {
   "manifest_version": 3,
   "name": "Ufficio Davolio — lettura schede",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Legge le righe visibili di Gmail e del laboratorio nelle schede già aperte, su richiesta di Ufficio Davolio.",
   "host_permissions": [
     "https://mail.google.com/*",
     "https://laboratorio-davolio.roberto81.chatgpt.site/*",
     "https://ufficio-davolio.boldox64.chatgpt.site/*",
+    "https://davoliomarmi-a11y.github.io/ufficio-davolio/*",
     "http://127.0.0.1/*"
   ],
   "background": { "service_worker": "worker.js" },
@@ -14,6 +15,7 @@
     {
       "matches": [
         "https://ufficio-davolio.boldox64.chatgpt.site/*",
+        "https://davoliomarmi-a11y.github.io/ufficio-davolio/*",
         "http://127.0.0.1/*"
       ],
       "js": ["bridge.js"],

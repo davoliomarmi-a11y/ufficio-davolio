@@ -6,12 +6,14 @@ Questa estensione collega Ufficio Davolio alle pagine già aperte di Gmail e del
 
 1. Scaricare il repository completo da GitHub e decomprimerlo, conservando la cartella `browser-extension` sul computer.
 2. In Chrome aprire `chrome://extensions`, attivare **Modalità sviluppatore**, scegliere **Carica estensione non pacchettizzata** e selezionare la cartella `browser-extension` (quella contenente `manifest.json`). Non selezionare lo ZIP o la cartella superiore.
-3. Aprire o ricaricare tutte e tre le schede: [Ufficio Davolio](https://ufficio-davolio.boldox64.chatgpt.site/), [Gmail](https://mail.google.com/) e [laboratorio](https://laboratorio-davolio.roberto81.chatgpt.site/).
+3. Aprire o ricaricare tutte e tre le schede: [Ufficio Davolio](https://davoliomarmi-a11y.github.io/ufficio-davolio/), [Gmail](https://mail.google.com/) e [laboratorio](https://laboratorio-davolio.roberto81.chatgpt.site/).
 4. In Gmail selezionare **davoliomarmi@gmail.com** e mostrare l’elenco desiderato (posta in arrivo o una ricerca già eseguita). Il pulsante account in alto a destra deve indicare quell’indirizzo nel proprio nome accessibile: l’estensione rifiuta account diversi o non verificabili. Non è sufficiente che l’URL contenga `/u/0/`.
 5. Nel laboratorio mostrare la tabella degli ordini con colonne **Stato**, **Numero/Ordine** e **Cliente**. Sono riconosciuti solo gli stati esatti **Completato**, **Completata** e **Completati**. “Non completato” e “Archiviato” non sono ordini completati.
 6. In Ufficio Davolio premere il pulsante per leggere le schede. Controllare un messaggio visibile e un ordine completato confrontandoli con le schede originali. Questa verifica richiede il browser reale: un test su una pagina di esempio non prova che il DOM del servizio attuale sia riconosciuto.
 
-È supportato anche l’Ufficio locale alle sole origini `http://127.0.0.1:5173/` e `http://127.0.0.1:8787/`. Il formato dei permessi Chrome per `127.0.0.1` non consente di limitare le porte; il bridge e il worker verificano comunque origine, porta e percorso esatti prima di accettare richieste. Le richieste da iframe e da altri siti vengono ignorate.
+La versione 1.1.0 supporta il nuovo indirizzo `https://davoliomarmi-a11y.github.io/ufficio-davolio/`. Se l’estensione era già installata, aggiornare la cartella sul PC, premere **Ricarica** in `chrome://extensions` e ricaricare le tre schede. Il collegamento precedente `https://ufficio-davolio.boldox64.chatgpt.site/` resta supportato. Sul dominio GitHub Pages è autorizzato soltanto il percorso esatto `/ufficio-davolio/`: la home del dominio, altri repository e sottopagine non possono richiedere la lettura. Parametri come `?ordine=1151` e frammenti nell’indirizzo non cambiano il percorso autorizzato.
+
+È supportato anche l’Ufficio locale alle sole origini `http://127.0.0.1:5173/` e `http://127.0.0.1:8787/`. Il formato dei permessi Chrome per `127.0.0.1` non consente di limitare le porte, e i permessi host di Chrome non impongono vincoli sui percorsi: il bridge e il worker verificano comunque origine, porta e percorso esatti prima di accettare richieste. Le richieste da iframe e da altri siti vengono ignorate.
 
 ## Limiti della lettura
 

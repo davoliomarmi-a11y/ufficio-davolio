@@ -7,16 +7,21 @@ import vm from 'node:vm';
 const external = createRequire(`${process.env.DAVOLIO_TEST_DEPS || '/tmp/davolio-extension-tests'}/package.json`);
 const { JSDOM } = external('jsdom');
 
-async function workspace() {
+async function workspace(t, url = 'http://127.0.0.1:5173/') {
   const html = await readFile(new URL('../app/office.html', import.meta.url), 'utf8');
-  const dom = new JSDOM(html, { url: 'http://127.0.0.1:5173/', runScripts: 'outside-only' });
+  const dom = new JSDOM(html, { url, runScripts: 'outside-only' });
+  t.after(() => dom.window.close());
   const posted = [], timers = new Map();
   let nextTimer = 0;
   const { window } = dom;
+  // JSDOM has no native modal dialogs; emulate the browser methods explicitly.
+  window.HTMLDialogElement.prototype.showModal = function () { this.setAttribute('open', ''); };
+  window.HTMLDialogElement.prototype.close = function () { this.removeAttribute('open'); };
   window.postMessage = (message, origin) => posted.push({ message, origin });
   window.setTimeout = callback => { const id = ++nextTimer; timers.set(id, callback); return id; };
   window.clearTimeout = id => timers.delete(id);
   window.fetch = () => { throw new Error('The workspace must not fetch an external or local data API.'); };
+  window.eval(await readFile(new URL('../public/app.js', import.meta.url), 'utf8'));
   const context = dom.getInternalVMContext();
   const modules = new Map();
   async function load(name) {
@@ -46,8 +51,8 @@ function fixture() {
   };
 }
 
-test('workspace starts with no fabricated reading and offers briefing and voice links', async () => {
-  const page = await workspace();
+test('workspace starts with no fabricated reading and offers briefing and voice links', async t => {
+  const page = await workspace(t);
   assert.equal(page.posted.length, 0);
   assert.equal(page.document.getElementById('mail-count').textContent, '—');
   assert.match(page.document.getElementById('mail-status').textContent, /Nessuna mail letta/);
@@ -57,8 +62,21 @@ test('workspace starts with no fabricated reading and offers briefing and voice 
   page.window.close();
 });
 
-test('one click updates both visible lists, escapes mail content, and preserves order filtering', async () => {
-  const page = await workspace();
+test('GitHub Pages subdirectory keeps assets and extension download on the published site', async t => {
+  const page = await workspace(t, 'https://davoliomarmi-a11y.github.io/ufficio-davolio/?ordine=1151');
+  const prefix = 'https://davoliomarmi-a11y.github.io/ufficio-davolio/';
+  assert.equal(page.document.querySelector('link[rel="stylesheet"]').href, prefix + 'styles.css');
+  assert.equal(page.document.querySelector('.brand img').src, prefix + 'logo-davolio.png');
+  assert.equal(page.document.querySelector('a[download]').href, prefix + 'estensione-ufficio.zip');
+  assert.equal(page.document.querySelector('#saved-report'), null);
+  assert.doesNotMatch(page.document.body.textContent, /Carla Italia Monti|Luigi Risso|Lucia Montefusco/);
+  page.read(fixture());
+  assert.equal(page.document.getElementById('mail-count').textContent, '1');
+  page.window.close();
+});
+
+test('one click updates both visible lists, escapes mail content, and preserves order filtering', async t => {
+  const page = await workspace(t);
   page.read(fixture());
   assert.equal(page.document.getElementById('mail-count').textContent, '1');
   assert.equal(page.document.getElementById('completed-count').textContent, '1');
@@ -76,8 +94,8 @@ test('one click updates both visible lists, escapes mail content, and preserves 
   page.window.close();
 });
 
-test('a failed subsequent reading keeps previous data visibly marked as old', async () => {
-  const page = await workspace();
+test('a failed subsequent reading keeps previous data visibly marked as old', async t => {
+  const page = await workspace(t);
   page.read(fixture());
   const fail = { readAt: new Date().toISOString(), mail: { status: 'unavailable', items: [], message: 'Gmail chiuso.' }, orders: { status: 'unrecognized', items: [], message: 'Tabella non riconosciuta.' } };
   page.read(fail);
@@ -89,8 +107,8 @@ test('a failed subsequent reading keeps previous data visibly marked as old', as
   page.window.close();
 });
 
-test('mail can update while orders remain unreadable, and missing extension has a useful outcome', async () => {
-  const page = await workspace();
+test('mail can update while orders remain unreadable, and missing extension has a useful outcome', async t => {
+  const page = await workspace(t);
   const payload = fixture();
   payload.orders.items[0].number = 'not-an-order';
   page.read(payload);
