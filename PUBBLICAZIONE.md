@@ -34,14 +34,11 @@ Aprire `http://127.0.0.1:8000/`. Questo comando serve solo l’anteprima locale.
 
 ## Aggiornare GitHub Pages
 
-Il ramo `gh-pages` è già caricato. L’attivazione automatica del servizio è stata
-rifiutata da GitHub con `Resource not accessible by integration` (HTTP 403):
-l’accesso di questa chat consente il push dei file, ma non l’abilitazione di Pages.
-Per la prima attivazione il titolare può aprire direttamente
-https://github.com/davoliomarmi-a11y/ufficio-davolio/settings/pages e impostare
-**Deploy from a branch**, **gh-pages**, **/ (root)**, quindi **Save**.
-Non serve condividere password o token nella chat. Dopo il salvataggio GitHub
-esegue la prima pubblicazione; il sito non va dichiarato attivo finché non è verificato.
+GitHub Pages è già attivo: **Deploy from a branch**, **gh-pages**, **/ (root)**,
+con HTTPS obbligatorio. La pubblicazione iniziale del commit
+`9178dc3195ee219df43e272ce93a1ec9d288919e` è risultata `built`; la pagina e tutti
+gli 11 asset sono stati verificati via HTTPS il 19 ottobre 2026, con contenuti
+identici ai file generati. Non occorre ripetere l’attivazione iniziale.
 
 1. Salvare i sorgenti aggiornati nel ramo `main` e rigenerare i file.
 2. Pubblicare **solo il contenuto di `out/pages/`** nel ramo `gh-pages`, alla radice
@@ -51,8 +48,9 @@ esegue la prima pubblicazione; il sito non va dichiarato attivo finché non è v
    usa un indice Git temporaneo, conserva il checkout corrente e pubblica senza
    push forzati. Se i file sono già identici a quelli sul ramo remoto, non crea
    un nuovo commit. Non crea un checkout o un worktree aggiuntivo.
-3. In GitHub, aprire **Settings → Pages**, scegliere **Deploy from a branch**,
-   ramo **gh-pages**, cartella **/ (root)** e salvare.
+3. La configurazione esistente pubblica automaticamente i nuovi commit di
+   `gh-pages`. Solo se viene disabilitata, il titolare può ripristinarla da
+   **Settings → Pages**: **Deploy from a branch**, **gh-pages**, **/ (root)**.
 4. Attendere il completamento della pubblicazione e aprire l’indirizzo indicato sopra.
    Controllare logo, colori, collegamenti e download dell’estensione.
 

@@ -2,7 +2,7 @@
 
 Per l’uso di Ufficio D’Avolio, leggere [Lettura delle schede aperte](LETTURA-SCHEDE.md). La scrivania legge posta e lavori tramite un’estensione Chrome locale, senza chiamare API esterne. I [prossimi passi](PROSSIMI-PASSI.md) descrivono il confronto in sola lettura con Fatture in Cloud, ancora da realizzare.
 
-La versione statica è pronta per **https://davoliomarmi-a11y.github.io/ufficio-davolio/**. Il titolare del repository deve abilitare GitHub Pages una prima volta nelle impostazioni. Vedere [Pubblicazione](PUBBLICAZIONE.md) per attivare il sito e aggiornare i file.
+La versione statica è online su **https://davoliomarmi-a11y.github.io/ufficio-davolio/**. Vedere [Pubblicazione](PUBBLICAZIONE.md) per aggiornare i file del sito.
 
 A clean full-stack starter running on [vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and Drizzle support.
 
