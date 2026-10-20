@@ -1,10 +1,14 @@
-# vinext-starter
+# Ufficio D’Avolio
 
-Per l’uso di Ufficio D’Avolio, leggere [Lettura delle schede aperte](LETTURA-SCHEDE.md). La scrivania legge posta e lavori tramite un’estensione Chrome locale, senza chiamare API esterne. I [prossimi passi](PROSSIMI-PASSI.md) descrivono il confronto in sola lettura con Fatture in Cloud, ancora da realizzare.
+La scrivania dell’ufficio offre due accessi diretti alle attività **Buongiorno ufficio** e **Smistamento mail**, seguiti da posta aziendale, calendario di oggi, laboratorio, Fatture in Cloud e assistente. I collegamenti funzionano anche senza JavaScript e non richiedono estensioni. Ogni servizio mantiene il proprio accesso con l’account dell’ufficio.
+
+L’aiuto, il testo più grande e le istruzioni vocali sono disponibili da **Come si usa**. La [lettura locale delle schede](LETTURA-SCHEDE.md) è una funzione aggiuntiva facoltativa, chiusa inizialmente nella sezione **Altri strumenti**. I [prossimi passi](PROSSIMI-PASSI.md) descrivono il confronto in sola lettura con Fatture in Cloud, ancora da realizzare.
 
 La versione statica è online su **https://davoliomarmi-a11y.github.io/ufficio-davolio/**. Vedere [Pubblicazione](PUBBLICAZIONE.md) per aggiornare i file del sito.
 
-A clean full-stack starter running on [vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and Drizzle support.
+## Riferimenti tecnici del progetto
+
+The original full-stack starter runs on [vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and Drizzle support. Production uses the standalone static page documented above.
 
 ## Prerequisites
 

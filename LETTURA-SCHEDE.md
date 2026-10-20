@@ -1,15 +1,17 @@
 # Lettura locale delle schede aperte
 
-Questa versione sostituisce la chiamata API degli ordini con la lettura delle liste già aperte in Google Chrome. I messaggi e gli ordini non passano dal server Ufficio e non vengono salvati in file, GitHub o localStorage. Restano in memoria nella scrivania fino alla ricarica della pagina.
+La lettura locale è facoltativa e si trova nella sezione chiusa **Altri strumenti: lettura locale di posta e lavori**. Le attività **Buongiorno ufficio** e **Smistamento mail** e i collegamenti agli strumenti si aprono direttamente dalla pagina principale, senza installare nulla.
+
+Questa funzione aggiuntiva legge le liste già aperte in Google Chrome. I messaggi e gli ordini non passano dal server Ufficio e non vengono salvati in file, GitHub o localStorage. Restano in memoria nella scrivania fino alla ricarica della pagina.
 
 ## Primo utilizzo in Chrome
 
-1. Scaricare `public/estensione-ufficio.zip` dal repository o il collegamento «Scaricate l’estensione Ufficio» nella scrivania aggiornata. Estrarlo in una cartella da conservare.
+1. Aprire **Altri strumenti**, poi **Configurare la lettura locale**. Scaricare l’estensione dal collegamento nella pagina o dal file `public/estensione-ufficio.zip` del repository ed estrarla in una cartella da conservare.
 2. Aprire `chrome://extensions`, attivare **Modalità sviluppatore**, scegliere **Carica estensione non pacchettizzata** e selezionare la cartella con `manifest.json`.
 3. Ricaricare la scrivania, Gmail e il laboratorio dopo l’installazione.
 4. In Gmail usare `davoliomarmi@gmail.com`. Per leggere solo i messaggi aziendali, aprire la ricerca `to:info@davoliomarmi.com`. Verificare che il pulsante dell’account in alto a destra indichi l’indirizzo corretto.
 5. Nel laboratorio mostrare la tabella degli ordini con le colonne Stato, Numero/Ordine e Cliente visibili.
-6. Tornare a Ufficio e premere **Leggi le schede aperte** in uno dei due pannelli.
+6. Tornare a Ufficio, aprire **Altri strumenti** e premere **Leggi posta e lavori**.
 
 Il nuovo sito è online su **https://davoliomarmi-a11y.github.io/ufficio-davolio/**. L’estensione 1.1.0 supporta questo indirizzo, il precedente `https://ufficio-davolio.boldox64.chatgpt.site/` e le anteprime locali `http://127.0.0.1:5173/` e `http://127.0.0.1:8787/`. Dopo un aggiornamento dell’estensione, sostituire i suoi file, premere **Ricarica** in `chrome://extensions` e ricaricare le schede.
 

@@ -1,55 +1,123 @@
 <!doctype html>
 <html lang="it">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Ufficio D’Avolio</title><meta name="description" content="La scrivania di Sabrina e Angela: assistente, appuntamenti e strumenti dell’ufficio."><link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="styles.css"><script src="app.js" defer></script><script type="module" src="completed.js"></script><script type="module" src="mail.js"></script><script type="module" src="workspace.js"></script></head>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>La scrivania dell’ufficio · D’Avolio Marmi</title>
+  <meta name="description" content="Le attività di Sabrina e Angela: briefing, posta, appuntamenti, laboratorio, fatture e assistente, a portata di mano.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css?v=20261020-1">
+  <script src="app.js?v=20261020-1" defer></script>
+  <script type="module" src="completed.js"></script>
+  <script type="module" src="mail.js"></script>
+  <script type="module" src="workspace.js"></script>
+</head>
 <body>
-<header class="page header"><a class="brand" href="./" aria-label="Ufficio D’Avolio, pagina iniziale"><img src="logo-davolio.png" alt="D’Avolio Marmi" width="180" height="90"><span>Ufficio</span></a><button class="quiet" id="open-settings" aria-haspopup="dialog">Aiuto e impostazioni</button></header>
-<main class="page">
-<div class="welcome"><h1>Ciao Sabrina, ciao Angela.</h1><p id="today-date"></p></div>
-<section class="assistant" aria-labelledby="assistant-title"><div><h2 id="assistant-title">Da dove cominciamo?</h2><p>Posta e lavori qui sotto. Per scegliere le priorità, aprite il briefing; per una mano, parlate con l’assistente.</p><p class="account-hint">Nella chat potete scrivere oppure usare il pulsante della voce, se disponibile. Usate l’account ChatGPT dell’ufficio.</p></div><div class="assistant-actions"><button class="button primary" id="read-workspace">Leggi posta e lavori</button><a class="button secondary" href="https://chatgpt.com/tasks" target="chatgpt-ufficio" rel="noopener">Briefing programmati <span aria-hidden="true">↗</span></a><a class="button secondary" href="https://chatgpt.com/c/6ad330e7-4018-83ed-8d60-b1390e1636af" target="chatgpt-ufficio" rel="noopener">Assistente e voce <span aria-hidden="true">↗</span></a></div></section>
-<p class="office-guide" id="workspace-status" role="status">Tenete aperte Gmail e la lista Lavori in Chrome, poi premete <b>Leggi posta e lavori</b>. Vedrete le righe già visibili nelle due pagine.</p>
-<details class="browser-help"><summary>Primo utilizzo: installare la lettura delle schede</summary><ol><li><a href="estensione-ufficio.zip" download>Scaricate l’estensione Ufficio</a> ed estraete lo ZIP in una cartella da conservare.</li><li>In Chrome aprite <b>chrome://extensions</b>, attivate <b>Modalità sviluppatore</b> e scegliete <b>Carica estensione non pacchettizzata</b>. Selezionate la cartella che contiene <b>manifest.json</b>.</li><li>Ricaricate questa pagina, Gmail e Lavori. In Gmail usate l’account <b>davoliomarmi@gmail.com</b>; per la sola posta aziendale aprite la ricerca <b>to:info@davoliomarmi.com</b>.</li><li>Tenete visibili le liste da leggere e premete <b>Leggi le schede aperte</b>. Se la lista non è riconosciuta, la pagina lo segnala.</li></ol><p class="note">I dati restano nella memoria di questa pagina e scompaiono quando la ricaricate. L’estensione non invia email, non apre messaggi e non aggiorna le caselle: legge ciò che è già caricato sullo schermo. Per le novità, aggiornate prima Gmail o il laboratorio.</p></details>
-<nav class="tools" aria-label="Strumenti dell’ufficio">
-<a href="https://mail.google.com/mail/?authuser=davoliomarmi%40gmail.com" target="_blank" rel="noopener"><span class="tool-icon" aria-hidden="true">✉</span><strong>Posta</strong><span class="arrow" aria-hidden="true">↗</span></a>
-<a href="https://calendar.google.com/calendar/u/0/r/day" target="_blank" rel="noopener"><span class="tool-icon" aria-hidden="true">▦</span><strong>Calendario</strong><span class="arrow" aria-hidden="true">↗</span></a>
-<a href="https://laboratorio-davolio.roberto81.chatgpt.site" target="_blank" rel="noopener"><span class="tool-icon" aria-hidden="true">▤</span><strong>Lavori</strong><span class="arrow" aria-hidden="true">↗</span></a>
-<a href="https://secure.fattureincloud.it/" target="_blank" rel="noopener"><span class="tool-icon" aria-hidden="true">€</span><strong>Fatture</strong><span class="arrow" aria-hidden="true">↗</span></a>
-</nav>
-<div class="office-columns">
-<section id="completed-section" class="panel completed-section" aria-labelledby="completed-title">
-<div class="section-head"><div><h2 id="completed-title">Lavori terminati <span class="count" id="completed-count">—</span></h2><p class="note">Promemoria per Sabrina e Angela · verifica della fattura</p></div><div class="button-row no-print"><button class="secondary" id="refresh-completed">Leggi le schede aperte</button><button class="primary" id="print-completed" disabled>Stampa lista</button></div></div>
-<p id="completed-status" role="status">Nessuna lettura eseguita. Aprite la lista Lavori e premete «Leggi le schede aperte».</p><p class="note no-print">Sono inclusi solo i lavori indicati come completati nelle righe visibili. Pagine successive, righe nascoste e filtri del laboratorio possono rendere la lista parziale.</p>
-<p class="invoice-warning">Fatture da verificare: il confronto automatico con Fatture in Cloud non è ancora collegato. Questa lista non attesta l’assenza di fatture.</p>
-<label class="completed-search no-print">Cerca numero, cliente o riferimento<input id="completed-search" type="search" placeholder="Es. 1151 o nome cliente"></label>
-<p id="completed-filter" class="note"></p><div class="completed-table-wrap"><table class="completed-table"><thead><tr><th>Ordine / cliente</th><th>Completato il</th><th>Lavoro / riferimento</th><th>Controllo fattura</th></tr></thead><tbody id="completed-rows"></tbody></table></div>
-<p id="completed-empty" hidden>Nessun lavoro terminato.</p><p class="note print-only" id="printed-at"></p>
-</section>
-<section id="mail-section" class="panel mail-section" aria-labelledby="mail-title">
-<div class="section-head"><div><h2 id="mail-title">Posta aperta in Gmail <span class="count" id="mail-count">—</span></h2><p class="note">davoliomarmi@gmail.com · lettura dei messaggi visibili</p></div><span class="mail-state" id="mail-state">Lettura non eseguita</span></div>
-<button class="secondary" id="refresh-mail">Leggi le schede aperte</button>
-<p id="mail-status" role="status">Nessuna mail letta da questa pagina. Aprite Gmail e premete «Leggi le schede aperte».</p>
-<p id="mail-context" class="note">Viene letta la cartella o ricerca aperta, con i filtri che avete scelto in Gmail.</p>
-<div id="mail-items" class="mail-items" aria-label="Messaggi letti dalla scheda Gmail"></div>
-<p id="mail-empty" class="note" hidden>La vista Gmail letta indica un elenco vuoto. Potrebbero esserci messaggi in altre cartelle o ricerche.</p>
-<a class="button primary mail-open" href="https://mail.google.com/mail/?authuser=davoliomarmi%40gmail.com#search/to%3Ainfo%40davoliomarmi.com" target="_blank" rel="noopener">Apri le email aziendali ↗</a>
-<p class="note">Apre Gmail con la ricerca dei messaggi indirizzati a info@davoliomarmi.com. Non modifica lo stato dei messaggi da questa pagina.</p>
-<p class="note">Sono letti solo mittente, oggetto, anteprima e data già visibili nell’elenco. La scrivania non legge il corpo completo, non assegna priorità automaticamente e non modifica lo stato letto dei messaggi.</p>
-</section></div>
-<dialog id="order-dialog" aria-labelledby="order-dialog-title"><div class="dialog-head"><h2 id="order-dialog-title">Dettaglio lavoro</h2><button class="close" data-close="order-dialog" aria-label="Chiudi dettaglio">×</button></div><div id="order-content"></div><a class="button secondary" href="https://laboratorio-davolio.roberto81.chatgpt.site/" target="_blank" rel="noopener">Apri laboratorio</a><p class="note">Nel laboratorio cercate il numero d’ordine riportato qui sopra.</p></dialog>
-</main>
-<footer class="page">Una cosa alla volta. Gli strumenti si aprono in una nuova scheda. I dati letti restano su questo dispositivo.</footer>
-<dialog id="settings" aria-labelledby="settings-title">
-<div class="dialog-head"><h2 id="settings-title">Aiuto e impostazioni</h2><button class="close" data-close="settings" aria-label="Chiudi aiuto e impostazioni">×</button></div>
-<div class="setting-row"><span>Dimensione del testo</span><button class="secondary" id="large-text" aria-pressed="false">A+ Testo più grande</button></div>
-<details class="help-section"><summary>Attività programmate e assistente</summary><p><b>Attività programmate</b> apre l’elenco in ChatGPT: scegliete un’attività per consultarne risultati e programmazione. Se l’elenco non appare, in ChatGPT andate su <b>Impostazioni → Notifiche → Gestisci attività</b>.</p><p><b>Parla con l’assistente</b> apre la conversazione dell’ufficio per una domanda o una richiesta del momento.</p><p>Aprite l’assistente. In ChatGPT, usate il pulsante per la conversazione vocale, se disponibile, oppure scrivete il messaggio.</p><p>Su Windows potete anche dettare con <b>Windows + H</b>. Controllate il testo prima di inviarlo.</p><p class="note">Questa pagina apre ChatGPT; il pulsante della voce si trova nella chat e può richiedere il consenso al microfono.</p></details>
-<details class="help-section"><summary>Voce e promemoria su questo PC</summary>
-<label class="field-label" for="voice-choice">Voce italiana</label><select id="voice-choice"><option value="">Voce italiana automatica</option></select>
-<div class="button-row"><button class="secondary" id="test-voice">Prova la voce</button><button class="secondary" id="read-report">Ascolta le istruzioni</button><button class="secondary" id="stop-voice">Ferma la voce</button></div>
-<button class="primary" id="toggle-reminders" aria-pressed="false">Attiva i promemoria vocali</button><p id="reminder-status" role="status">Promemoria vocali disattivati.</p>
-<p class="note">Se attivi, salutano alle 08:30 e ricordano di aprire il briefing ogni due ore, tra le 08:00 e le 18:59 (ora italiana). Richiedono pagina aperta, PC attivo e audio acceso. Riattivateli dopo aver riaperto la pagina. Il browser può sospenderli in background.</p>
-<p class="note">I promemoria vocali non leggono le novità dei programmi. I briefing programmati in ChatGPT restano separati e non aggiornano automaticamente questa pagina.</p></details>
-<details class="help-section"><summary>Aprire Ufficio all’avvio di Windows</summary><ol><li>Scaricate il collegamento qui sotto.</li><li>Premete <b>Windows + R</b>, scrivete <b>shell:startup</b> e premete Invio.</li><li>Copiate il file <b>Apri-Ufficio.url</b> nella cartella aperta.</li></ol><a class="button secondary" href="Apri-Ufficio.url" download>Scarica collegamento per Windows</a><p class="note">La pagina si aprirà con il browser predefinito dopo l’accesso a Windows. Il sito non modifica da solo il PC. Accedete agli strumenti con gli account dell’ufficio e controllate il calendario selezionato.</p></details>
-<details class="help-section"><summary>Dati, avvisi e laboratorio</summary><p>Posta e lavori sono letti dalle pagine aperte quando premete <b>Leggi posta e lavori</b>. Per gli appuntamenti e le priorità della giornata aprite i briefing programmati in ChatGPT.</p><p><b>Avvisi meteo e chiusure:</b> questa pagina non li verifica in tempo reale. Prima degli spostamenti consultate le disposizioni aggiornate sui siti ufficiali.</p><p><a href="https://www.comune.genova.it/" target="_blank" rel="noopener">Comune di Genova ↗</a> · <a href="https://staglieno.comune.genova.it/" target="_blank" rel="noopener">Cimitero di Staglieno ↗</a></p><p><b>Pezzi terminati:</b> la lista Lavori terminati viene letta dalla scheda aperta quando premete «Leggi le schede aperte». Potete stampare le righe lette e filtrate; la verifica delle fatture resta da effettuare.</p></details>
-<div class="dialog-end"><button class="primary" data-close="settings">Torna all’ufficio</button></div></dialog>
+<a class="skip-link" href="#main-content">Vai alle attività</a>
+<svg class="icon-library" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></symbol>
+  <symbol id="icon-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></symbol>
+  <symbol id="icon-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4m10-4v4M3 11h18m-13 4h2m4 0h2m-8 3h2"/></symbol>
+  <symbol id="icon-work" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="14" rx="3"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12c5 4 13 4 18 0m-9 1v3"/></symbol>
+  <symbol id="icon-invoice" viewBox="0 0 24 24"><path d="M6 3h12a1 1 0 0 1 1 1v17l-3-2-4 2-4-2-3 2V4a1 1 0 0 1 1-1Z"/><path d="M9 8h6m-6 4h6m-6 4h3"/></symbol>
+  <symbol id="icon-chat" viewBox="0 0 24 24"><path d="M20 15a4 4 0 0 1-4 4H9l-5 3V7a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4Z"/><path d="M8 9h8m-8 4h5"/></symbol>
+  <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
+  <symbol id="icon-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 4.5 1.5c-1.2.8-2 1.1-2 2.5m0 3h.01"/></symbol>
+</svg>
 
+<header class="site-header">
+  <div class="page header-inner">
+    <a class="brand" href="./" aria-label="D’Avolio Marmi, pagina iniziale"><img src="logo-davolio.png" alt="D’Avolio Marmi" width="180" height="90"><span>La scrivania<br><strong>dell’ufficio</strong></span></a>
+    <button class="help-button" id="open-settings" aria-haspopup="dialog"><svg class="icon" aria-hidden="true"><use href="#icon-help"/></svg><span>Come si usa</span></button>
+  </div>
+</header>
+
+<main id="main-content" class="page">
+  <section class="intro" aria-labelledby="page-title">
+    <div><p class="hello">Ciao Sabrina, ciao Angela.</p><h1 id="page-title">Da dove cominciamo?</h1><p class="intro-note">Scegli cosa fare. Ogni collegamento apre direttamente lo strumento giusto.</p></div>
+    <time id="today-date" class="today-date"></time>
+  </section>
+
+  <section class="activities" aria-labelledby="activities-title">
+    <div class="section-heading"><h2 id="activities-title">Le vostre attività</h2><a class="quiet-link" href="https://chatgpt.com/tasks" target="_blank" rel="noopener noreferrer">Tutte le attività <span aria-hidden="true">↗</span></a></div>
+    <div class="scheduled-grid">
+      <a class="activity-card morning-card" data-activity="first" href="https://chatgpt.com/scheduled?automationId=6ad37ff090f88191a7d5e3232a583459&amp;automationSource=cloud" target="_blank" rel="noopener noreferrer">
+        <div class="card-top"><span class="activity-icon"><svg class="icon" aria-hidden="true"><use href="#icon-sun"/></svg></span><span class="card-kicker">Per iniziare la giornata</span></div>
+        <h3>Buongiorno ufficio</h3><p>Il punto della giornata, nella vostra attività di ChatGPT.</p>
+        <span class="card-action">Apri l’attività <svg class="icon" aria-hidden="true"><use href="#icon-arrow"/></svg></span><span class="sr-only">Si apre in una nuova scheda.</span>
+      </a>
+      <a class="activity-card mail-activity-card" data-activity="second" href="https://chatgpt.com/scheduled?automationId=6ad24306d56c81919b1717c7b602bcdf&amp;automationSource=cloud" target="_blank" rel="noopener noreferrer">
+        <div class="card-top"><span class="activity-icon"><svg class="icon" aria-hidden="true"><use href="#icon-mail"/></svg></span><span class="card-kicker">Per organizzare la posta</span></div>
+        <h3>Smistamento mail</h3><p>Apri l’attività dedicata alla gestione della posta.</p>
+        <span class="card-action">Apri l’attività <svg class="icon" aria-hidden="true"><use href="#icon-arrow"/></svg></span><span class="sr-only">Si apre in una nuova scheda.</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="daily-tools" aria-labelledby="tools-title">
+    <div class="section-heading"><h2 id="tools-title">Cosa devi fare?</h2><p>Gli strumenti dell’ufficio, sempre qui.</p></div>
+    <nav class="tools-grid" aria-label="Accessi diretti agli strumenti dell’ufficio">
+      <a class="tool-card" data-tool="mail" href="https://mail.google.com/mail/?authuser=davoliomarmi%40gmail.com#search/to%3Ainfo%40davoliomarmi.com" target="_blank" rel="noopener noreferrer">
+        <span class="tool-icon"><svg class="icon" aria-hidden="true"><use href="#icon-mail"/></svg></span><h3>Leggi la posta</h3><p>I messaggi indirizzati a<br><span class="email-address">info@davoliomarmi.com</span>.</p><span class="tool-action">Apri Gmail <span aria-hidden="true">↗</span></span><span class="sr-only">Si apre in una nuova scheda.</span>
+      </a>
+      <a class="tool-card" data-tool="calendar" href="https://calendar.google.com/calendar/r/day?authuser=davoliomarmi%40gmail.com" target="_blank" rel="noopener noreferrer">
+        <span class="tool-icon"><svg class="icon" aria-hidden="true"><use href="#icon-calendar"/></svg></span><h3>Guarda gli appuntamenti</h3><p>Il calendario di oggi, per organizzare la giornata.</p><span class="tool-action">Apri il calendario <span aria-hidden="true">↗</span></span><span class="sr-only">Si apre in una nuova scheda.</span>
+      </a>
+      <a class="tool-card" data-tool="laboratory" href="https://laboratorio-davolio.roberto81.chatgpt.site/" target="_blank" rel="noopener noreferrer">
+        <span class="tool-icon"><svg class="icon" aria-hidden="true"><use href="#icon-work"/></svg></span><h3>Controlla i lavori</h3><p>Lo stato degli ordini e i dettagli delle lavorazioni.</p><span class="tool-action">Apri il laboratorio <span aria-hidden="true">↗</span></span><span class="sr-only">Si apre in una nuova scheda.</span>
+      </a>
+      <a class="tool-card" data-tool="invoices" href="https://secure.fattureincloud.it/" target="_blank" rel="noopener noreferrer">
+        <span class="tool-icon"><svg class="icon" aria-hidden="true"><use href="#icon-invoice"/></svg></span><h3>Controlla le fatture</h3><p>I documenti dell’ufficio in Fatture in Cloud.</p><span class="tool-action">Apri Fatture in Cloud <span aria-hidden="true">↗</span></span><span class="sr-only">Si apre in una nuova scheda.</span>
+      </a>
+      <a class="tool-card assistant-card" data-tool="assistant" href="https://chatgpt.com/c/6ad330e7-4018-83ed-8d60-b1390e1636af" target="_blank" rel="noopener noreferrer">
+        <span class="tool-icon"><svg class="icon" aria-hidden="true"><use href="#icon-chat"/></svg></span><h3>Chiedi una mano</h3><p>Una domanda, un dubbio o qualcosa da approfondire? Apri l’assistente dell’ufficio. Nella chat puoi anche usare la voce.</p><span class="tool-action">Apri l’assistente <span aria-hidden="true">↗</span></span><span class="sr-only">Si apre in una nuova scheda.</span>
+      </a>
+    </nav>
+    <p class="account-note">Usa gli account dell’ufficio. Se uno strumento chiede l’accesso, accedi direttamente nella pagina che si apre.</p>
+  </section>
+
+  <section class="shortcuts" aria-labelledby="shortcuts-title"><h2 id="shortcuts-title">Quando serve</h2><div class="shortcut-links">
+    <a data-shortcut="unread" href="https://mail.google.com/mail/?authuser=davoliomarmi%40gmail.com#search/to%3Ainfo%40davoliomarmi.com%20is%3Aunread" target="_blank" rel="noopener noreferrer">Solo le email non lette <span aria-hidden="true">↗</span></a>
+    <a href="https://www.comune.genova.it/" target="_blank" rel="noopener noreferrer">Comune di Genova <span aria-hidden="true">↗</span></a>
+    <a href="https://staglieno.comune.genova.it/" target="_blank" rel="noopener noreferrer">Cimitero di Staglieno <span aria-hidden="true">↗</span></a>
+  </div></section>
+
+  <details id="local-reading" class="optional-tools">
+    <summary>Altri strumenti: lettura locale di posta e lavori</summary>
+    <div class="optional-content">
+      <h2>Visualizza gli elenchi in questa pagina</h2><p class="note">Funzione opzionale per Chrome con l’estensione già configurata. I collegamenti alle attività e agli strumenti qui sopra sono subito utilizzabili.</p>
+      <button class="primary" id="read-workspace">Leggi posta e lavori</button><p id="workspace-status" role="status">La lettura locale non è stata eseguita.</p>
+      <details class="browser-help"><summary>Configurare la lettura locale</summary><ol><li><a href="estensione-ufficio.zip" download>Scarica l’estensione Ufficio</a> ed estrai lo ZIP in una cartella da conservare.</li><li>In Chrome apri <b>chrome://extensions</b>, attiva <b>Modalità sviluppatore</b> e scegli <b>Carica estensione non pacchettizzata</b>. Seleziona la cartella con <b>manifest.json</b>.</li><li>Ricarica questa pagina, Gmail e il laboratorio. In Gmail usa <b>davoliomarmi@gmail.com</b>.</li><li>Mostra le liste da leggere nelle schede e premi <b>Leggi posta e lavori</b>.</li></ol><p class="note">Sono lette solo le righe visibili. I dati restano nella memoria di questa pagina fino alla ricarica e non vengono inviati al sito.</p></details>
+      <div class="office-columns">
+        <section id="completed-section" class="panel completed-section" aria-labelledby="completed-title">
+          <div class="section-head"><div><h3 id="completed-title">Lavori terminati <span class="count" id="completed-count">—</span></h3><p class="note">Righe lette dalla scheda del laboratorio</p></div><div class="button-row no-print"><button class="secondary" id="refresh-completed">Rileggi le schede</button><button class="primary" id="print-completed" disabled>Stampa lista</button></div></div>
+          <p id="completed-status" role="status">Nessuna lettura eseguita.</p><p class="note no-print">Solo i lavori completati nelle righe visibili: filtri, pagine successive e righe nascoste possono rendere la lista parziale.</p><p class="invoice-warning">La verifica delle fatture resta da effettuare in Fatture in Cloud.</p>
+          <label class="completed-search no-print">Cerca numero, cliente o riferimento<input id="completed-search" type="search" placeholder="Numero o nome del cliente"></label><p id="completed-filter" class="note"></p>
+          <div class="completed-table-wrap"><table class="completed-table"><thead><tr><th>Ordine / cliente</th><th>Completato il</th><th>Lavoro / riferimento</th><th>Controllo fattura</th></tr></thead><tbody id="completed-rows"></tbody></table></div><p id="completed-empty" hidden>Nessun lavoro letto.</p><p class="note print-only" id="printed-at"></p>
+        </section>
+        <section id="mail-section" class="panel mail-section" aria-labelledby="mail-title">
+          <div class="section-head"><div><h3 id="mail-title">Posta letta in Gmail <span class="count" id="mail-count">—</span></h3></div><span class="mail-state" id="mail-state">Lettura non eseguita</span></div><button class="secondary" id="refresh-mail">Rileggi le schede</button>
+          <p id="mail-status" role="status">Nessuna mail letta da questa pagina.</p><p id="mail-context" class="note">Viene letta la cartella o ricerca aperta in Gmail.</p><div id="mail-items" class="mail-items" aria-label="Messaggi letti dalla scheda Gmail"></div><p id="mail-empty" class="note" hidden>La vista Gmail letta indica un elenco vuoto. Potrebbero esserci messaggi in altre cartelle o ricerche.</p><p class="note">La lettura non apre i messaggi e non ne modifica lo stato letto.</p>
+        </section>
+      </div>
+    </div>
+  </details>
+</main>
+
+<footer class="page site-footer"><p>Una cosa alla volta.</p><span>Gli strumenti si aprono in una nuova scheda.</span></footer>
+
+<dialog id="settings" aria-labelledby="settings-title">
+  <div class="dialog-head"><h2 id="settings-title">Una mano per cominciare</h2><button class="close" data-close="settings" aria-label="Chiudi l’aiuto">×</button></div>
+  <ol class="quick-guide"><li><strong>Inizia da un’attività.</strong> «Buongiorno ufficio» e «Smistamento mail» aprono direttamente le due attività in ChatGPT.</li><li><strong>Apri lo strumento che ti serve.</strong> Posta, appuntamenti, laboratorio e fatture hanno ciascuno il proprio pulsante.</li><li><strong>Se hai un dubbio, chiedi una mano.</strong> L’assistente si apre nella chat dell’ufficio. Puoi scrivere oppure usare la voce, se disponibile.</li></ol>
+  <a class="button primary" href="https://chatgpt.com/c/6ad330e7-4018-83ed-8d60-b1390e1636af" target="_blank" rel="noopener noreferrer">Apri l’assistente dell’ufficio <span aria-hidden="true">↗</span></a>
+  <div class="setting-row"><span>Preferisci un testo più grande?</span><button class="secondary" id="large-text" aria-pressed="false">A+ Testo più grande</button></div>
+  <details class="help-section"><summary>Voce e promemoria su questo PC</summary><p>Per parlare con l’assistente usa il pulsante della voce dentro ChatGPT. Qui puoi ascoltare le istruzioni o attivare un promemoria locale.</p><label class="field-label" for="voice-choice">Voce italiana</label><select id="voice-choice"><option value="">Voce italiana automatica</option></select><div class="button-row"><button class="secondary" id="read-report">Ascolta le istruzioni</button><button class="secondary" id="test-voice">Prova la voce</button><button class="secondary" id="stop-voice">Ferma la voce</button></div><button class="primary" id="toggle-reminders" aria-pressed="false">Attiva i promemoria vocali</button><p id="reminder-status" role="status">Promemoria vocali disattivati.</p><p class="note">Se attivi, ricordano di aprire i briefing ogni due ore, dalle 08:00 alle 18:59, con un saluto alle 08:30 (ora italiana). Funzionano mentre pagina e PC sono attivi, con audio acceso; vanno riattivati dopo aver riaperto la pagina. Non leggono le novità dei programmi.</p></details>
+  <details class="help-section"><summary>Aprire la scrivania all’avvio di Windows</summary><ol><li><a href="Apri-Ufficio.url" download>Scarica il collegamento Ufficio.</a></li><li>Premi <b>Windows + R</b>, scrivi <b>shell:startup</b> e premi Invio.</li><li>Copia il file <b>Apri-Ufficio.url</b> nella cartella aperta.</li></ol><p class="note">Dopo l’accesso a Windows, la scrivania si aprirà nel browser predefinito.</p></details>
+  <p class="note">La scrivania apre gli strumenti e le attività esistenti. Le informazioni aggiornate si consultano nelle rispettive pagine; questa schermata non mostra una sincronizzazione automatica.</p>
+  <div class="dialog-end"><button class="primary" data-close="settings">Torna alla scrivania</button></div>
+</dialog>
+
+<dialog id="order-dialog" aria-labelledby="order-dialog-title"><div class="dialog-head"><h2 id="order-dialog-title">Dettaglio lavoro</h2><button class="close" data-close="order-dialog" aria-label="Chiudi il dettaglio">×</button></div><div id="order-content"></div><a class="button secondary" href="https://laboratorio-davolio.roberto81.chatgpt.site/" target="_blank" rel="noopener noreferrer">Apri il laboratorio</a></dialog>
 <aside class="toast" id="reminder-toast" role="status" hidden><strong>Ciao Sabrina, ciao Angela.</strong><p id="reminder-message"></p><button class="secondary" id="dismiss-reminder">Ho letto</button></aside>
-</body></html>
+</body>
+</html>

@@ -76,8 +76,10 @@ openTabs.subscribe(state => {
 
 el('refresh-completed').onclick = () => { openTabs.read().catch(() => {}); };
 el('completed-search').oninput = render;
+window.addEventListener('afterprint', () => { document.body.classList.remove('print-orders'); });
 el('print-completed').onclick = () => {
   if (!checkedAt) return;
   el('printed-at').textContent = `D’Avolio Marmi · Stampato il ${formatDate(new Date().toISOString())} · Righe visibili lette il ${formatDate(checkedAt)} · Lista parziale${failed ? ' · ATTENZIONE: ultima lettura non riuscita; dati precedenti.' : ''}`;
+  document.body.classList.add('print-orders');
   window.print();
 };

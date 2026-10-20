@@ -6,7 +6,9 @@ const getSaved = (key, fallback = '') => { try { return localStorage.getItem(key
 const save = (key, value) => { try { localStorage.setItem(key, value); } catch {} };
 const romeDay = date => new Intl.DateTimeFormat('sv-SE', { timeZone: TIMEZONE }).format(date);
 function refreshDay() {
-  $('#today-date').textContent = new Intl.DateTimeFormat('it-IT', { weekday:'long', day:'numeric', month:'long', year:'numeric', timeZone:TIMEZONE }).format(new Date());
+  const now = new Date();
+  $('#today-date').textContent = new Intl.DateTimeFormat('it-IT', { weekday:'long', day:'numeric', month:'long', year:'numeric', timeZone:TIMEZONE }).format(now);
+  $('#today-date').setAttribute('datetime', romeDay(now));
 }
 refreshDay();
 setInterval(refreshDay, 60000);
@@ -44,7 +46,7 @@ if (hasVoice) { loadVoices(); speechSynthesis.addEventListener('voiceschanged', 
 $('#voice-choice').onchange = () => save('ufficio-voice', $('#voice-choice').value);
 $('#test-voice').onclick = () => speak('Ciao Sabrina, ciao Angela. Guardiamo insieme le cose da fare, una cosa alla volta.');
 $('#stop-voice').onclick = () => { if (hasVoice) speechSynthesis.cancel(); };
-$('#read-report').onclick = () => speak('Benvenute nella scrivania dell’ufficio. Tenete aperte Gmail e la lista Lavori, poi premete Leggi posta e lavori. Per le priorità aprite Briefing programmati. Per chiedere una mano scegliete Assistente e voce: nella chat potete scrivere oppure premere il pulsante della voce.');
+$('#read-report').onclick = () => speak('Ciao Sabrina, ciao Angela. Scegliete un’attività per cominciare. Buongiorno ufficio e Smistamento mail aprono direttamente le vostre attività in ChatGPT. Più sotto trovate posta, appuntamenti, laboratorio e fatture. Per un dubbio, premete Chiedi una mano. Nella chat dell’assistente potete scrivere o usare la voce.');
 function reminderStatus() {
   $('#toggle-reminders').setAttribute('aria-pressed', String(remindersOn));
   $('#toggle-reminders').textContent = remindersOn ? 'Disattiva i promemoria vocali' : 'Attiva i promemoria vocali';
@@ -72,9 +74,9 @@ function checkReminders() {
   const parts = new Intl.DateTimeFormat('en-GB', { timeZone:TIMEZONE, hour:'2-digit', minute:'2-digit', hourCycle:'h23' }).formatToParts(now);
   const hour = Number(parts.find(part => part.type === 'hour').value), minute = Number(parts.find(part => part.type === 'minute').value);
   if (hour === 8 && minute >= 30 && getSaved('ufficio-morning-day') !== day) {
-    announce('Buongiorno Sabrina, buongiorno Angela! Caffè pronto? Aprite il briefing delle otto e trenta in ChatGPT per fare il punto su appuntamenti, posta e priorità. Buon lavoro!', day, true);
+    announce('Buongiorno Sabrina, buongiorno Angela. Aprite l’attività Buongiorno ufficio in ChatGPT per fare il punto su appuntamenti, posta e priorità. Buon lavoro!', day, true);
   } else if (hour >= 8 && hour < 19 && now.getTime() >= nextReminder && now.getTime() - Number(getSaved('ufficio-last-reminder', '0')) >= PERIOD) {
-    announce('Sabrina e Angela, facciamo il punto. Aprite il briefing in ChatGPT per controllare le novità e scegliere la prossima cosa da fare.', day, false);
+    announce('Sabrina e Angela, facciamo il punto. Aprite Buongiorno ufficio o Smistamento mail in ChatGPT per controllare le novità e scegliere la prossima cosa da fare.', day, false);
   }
 }
 setInterval(checkReminders, 15000);
